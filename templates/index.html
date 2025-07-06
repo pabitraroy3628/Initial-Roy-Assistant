@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="container py-5">
-    <div class="hero-header">
+    <div class="hero-header text-center">
       <h1>🤖 AskRoy</h1>
       <p class="text-muted mb-1">Roy’s Personal Assistant. Ask me anything!</p>
       {% if status_message %}
@@ -19,14 +19,15 @@
       {% endif %}
     </div>
 
-    {% if greeting %}
-    <p class="lead">{{ greeting }}</p>
-    {% endif %}
-
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="main-card fade-in">
           <form method="POST">
+
+            {% if greeting %}
+            <p class="lead text-center mb-3">{{ greeting }}</p>
+            {% endif %}
+
             <div class="input-group mb-2">
               <input type="text" class="form-control form-control-lg" name="query"
                      value="{{ query }}" placeholder="Ask me anything..." required autofocus>
@@ -34,8 +35,15 @@
             </div>
 
             {% if show_suggestions %}
-            <div class="suggestions">
-              🔍 Try: <em>Where is Roy?</em>, <em>Next holiday</em>, <em>Offers for Amazon</em>, <em>Who is your manager?</em>
+            <div class="suggestions fade-in">
+              <p class="mb-0">
+                🔍 Try asking:
+                <em>Where is Roy?</em>,
+                <em>Next holiday</em>,
+                <em>Offers for Amazon</em>,
+                <em>Who is your manager?</em>,
+                <em>List Hy-Vee holidays</em>
+              </p>
             </div>
             {% endif %}
 
@@ -43,24 +51,25 @@
             <div class="card mt-4 shadow-sm fade-in">
               <div class="card-body">
                 {% if source == "roy" %}
-                  <div class="d-flex align-items-start mb-3">
-                    <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=Roy"
-                         alt="Roy" width="48" height="48" class="me-3 roy-avatar">
-                    <div>
-                      <div class="answer-box">{{ offers|safe }}</div>
-                      <div class="badge bg-primary mt-3">Answered by Roy</div>
-                    </div>
+                <div class="d-flex align-items-start mb-3">
+                  <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=Roy"
+                       alt="Roy" width="48" height="48" class="me-3 roy-avatar">
+                  <div>
+                    <div class="answer-box">{{ offers|safe }}</div>
+                    <div class="badge bg-primary mt-3">🧠 Answered by Roy</div>
                   </div>
+                </div>
                 {% elif source == "web" %}
-                  <div class="answer-box">{{ offers|safe }}</div>
-                  <div class="badge bg-success mt-3">Answered from Web</div>
+                <div class="answer-box">{{ offers|safe }}</div>
+                <div class="badge bg-success mt-3">🌐 Answered from Web</div>
                 {% elif source == "offers" %}
-                  <div class="answer-box">{{ offers|safe }}</div>
-                  <div class="badge bg-info text-dark mt-3">Offers Based on Your Cards</div>
+                <div class="answer-box">{{ offers|safe }}</div>
+                <div class="badge bg-info text-dark mt-3">🎁 Offers Based on Your Cards</div>
                 {% endif %}
               </div>
             </div>
             {% endif %}
+
           </form>
         </div>
       </div>
