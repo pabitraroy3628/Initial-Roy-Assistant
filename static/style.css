@@ -43,3 +43,17 @@ body {
   border-radius: 50%;
   border: 2px solid #ddd;
 }
+.answer-box {
+  white-space: pre-wrap;         /* Wrap long lines */
+  word-break: break-word;        /* Break long words if needed */
+  overflow-wrap: anywhere;       /* Break on overflow */
+  padding: 16px;
+  background: #ffffffcc;         /* Semi-transparent white */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #222;
+  line-height: 1.5;
+}
+
