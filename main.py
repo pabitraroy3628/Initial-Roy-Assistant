@@ -5,6 +5,37 @@ import requests
 import os
 import re
 
+import os
+import openai
+from flask import Flask, render_template, request
+from datetime import datetime, time, timedelta
+
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def get_roy_greeting():
+    now = datetime.utcnow() + timedelta(hours=5, minutes=30)
+    h = now.hour
+    if h < 12:
+        part = "Good morning"
+    elif h < 17:
+        part = "Good afternoon"
+    else:
+        part = "Good evening"
+    return f"{part}! How are you doing today? How can Roy assist you?"
+
+def ask_openai_conversation(system_prompt, user_prompt):
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+    )
+    return resp.choices[0].message.content.strip()
+
+
 load_dotenv()
 app = Flask(__name__)
 
@@ -166,8 +197,8 @@ def get_general_answer(query):
 def get_roy_custom_answer(query):
     lower = query.lower()
 
+    # Holiday-related queries
     HOLIDAY_SYNONYMS = ["holiday", "leave", "off", "shutdown", "vacation"]
-
     if any(word in lower for word in HOLIDAY_SYNONYMS):
         if "next" in lower:
             return get_next_holiday()
@@ -176,10 +207,11 @@ def get_roy_custom_answer(query):
         elif "this week" in lower:
             return get_this_week_holidays()
 
+    # Personal information about Roy
     if any(x in lower for x in ["who are you", "your name", "who is roy", "who is pabitra roy", "who is mr. roy"]):
         return (
             "**Pabitra Roy** is an Information Security Engineer at Hy-Vee. "
-            "He works on IAM and Security Engineering. "
+            "He works for IAM and Security Engineering. "
             "He holds a Master’s Degree in Cybersecurity and is CompTIA and Okta Certified."
         )
 
@@ -233,8 +265,26 @@ def get_roy_custom_answer(query):
         else:
             return status
 
+    # Location-related query
     elif "where is roy" in lower:
         return get_current_roy_status_message()
+
+    # Basic greetings
+    GREETINGS = {
+        "hello": "Hello! How can I assist you today?",
+        "hi": "Hi there! How can I help you?",
+        "hey": "Hey! What can I do for you?",
+        "good morning": "Good morning! How can I assist you today?",
+        "good afternoon": "Good afternoon! How can I help you?",
+        "good evening": "Good evening! How can I assist you?",
+        "how are you": "I'm doing well, thank you for asking! How can I assist you today?",
+        "how's your health": "I'm just a program, but thanks for asking! How can I help you?",
+        "how are you doing": "I'm functioning optimally, thank you! How can I assist you?",
+    }
+
+    for greeting, response in GREETINGS.items():
+        if greeting in lower:
+            return response
 
     return None
 
@@ -293,25 +343,47 @@ def index():
     offers = None
     query = ""
     source = None
+    greeting = None
+    show_suggestions = False
+    show_status_message = False
+
+    # Always calculate Roy's availability
     status_message = get_current_roy_status_message()
 
     if request.method == "POST":
         query = request.form.get("query", "").strip()
-        custom = get_roy_custom_answer(query)
-        if custom:
-            offers, source = custom, "roy"
-        elif any(x in query.lower() for x in ["from my list", "with my cards"]):
-            offers, source = get_offers_from_mistral(query), "roy"
+        if query:
+            custom = get_roy_custom_answer(query)
+            if custom:
+                offers = custom
+                source = "roy"
+            else:
+                offers = get_general_answer(query)
+                source = "web"
+            show_suggestions = True
         else:
-            offers, source = get_general_answer(query), "web"
+            show_status_message = True
+    else:
+        # Greet the user based on the time of day
+        now = datetime.now()
+        if now.hour < 12:
+            greeting = "Good morning! How can I assist you today?"
+        elif now.hour < 18:
+            greeting = "Good afternoon! What can I do for you?"
+        else:
+            greeting = "Good evening! How may I help you tonight?"
 
     return render_template(
         "index.html",
         offers=offers,
         query=query,
         source=source,
-        status_message=status_message
+        status_message=status_message,
+        greeting=greeting,
+        show_suggestions=show_suggestions,
+        show_status_message=show_status_message,
     )
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
