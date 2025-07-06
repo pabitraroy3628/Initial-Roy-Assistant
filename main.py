@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🤖 Ask Roy</title>
+  <title>Ask Roy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -69,7 +69,7 @@
 
 <div class="container py-5">
  <div class="hero-header">
-  <h1>🤖 AskRoy</h1>
+  <h1>AskRoy</h1>
   <p class="text-muted mb-1">Roy’s Personal Assistant. I can help when Roy is unavailable. Ask me anything!</p>
 
   {% if status_message %}
@@ -101,9 +101,9 @@
               <div>
                 <p style="white-space: pre-wrap;">{{ offers }}</p>
                 {% if source == "roy" %}
-                  <div class="badge bg-primary mt-3">🧠 Answered by Roy</div>
+                  <div class="badge bg-primary mt-3">Answered by Roy</div>
                 {% elif source == "web" %}
-                  <div class="badge bg-success mt-3">🌐 Answered from Web</div>
+                  <div class="badge bg-success mt-3">Answered from Web</div>
                 {% endif %}
               </div>
             </div>
