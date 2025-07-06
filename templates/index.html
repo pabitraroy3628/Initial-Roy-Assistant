@@ -18,6 +18,11 @@
       </p>
       {% endif %}
     </div>
+
+    {% if greeting %}
+    <p class="lead">{{ greeting }}</p>
+    {% endif %}
+
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="main-card fade-in">
@@ -27,9 +32,11 @@
                      value="{{ query }}" placeholder="Ask me anything..." required autofocus>
               <button class="btn btn-primary btn-lg" type="submit">Ask Roy</button>
             </div>
+            {% if show_suggestions %}
             <div class="suggestions">
               🔍 Try: <em>Where is Roy?</em>, <em>Next holiday</em>, <em>Offers for Amazon</em>, <em>Who is your manager?</em>
             </div>
+            {% endif %}
             {% if offers %}
             <div class="card mt-4 shadow-sm fade-in">
               <div class="card-body d-flex align-items-start">
