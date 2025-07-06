@@ -207,6 +207,31 @@ def get_roy_custom_answer(query):
         elif "this week" in lower:
             return get_this_week_holidays()
 
+
+        # Holiday listing queries
+
+        elif any(x in lower for x in [
+
+            "holiday", "hyvee holiday", "hy-vee holiday", "company holiday", "leave calendar",
+
+            "list holidays", "show holidays", "holiday list", "company leave", "2025 holidays", "holiday calendar"
+
+        ]):
+
+            main = "\n".join([f"📅 {date} - {name}" for date, name in HOLIDAYS_2025.items()])
+
+            optional = "\n".join([f"🟡 {date} - {name}" for date, name in OPTIONAL_HOLIDAYS.items()])
+
+            return (
+
+                    "**🗓️ Hy-Vee Holiday List for 2025**\n\n"
+
+                    "**Main Holidays:**\n" + main + "\n\n"
+
+                                                    "**Optional Holidays:**\n" + optional
+
+            )
+
     # Personal information about Roy
     if any(x in lower for x in ["who are you", "your name", "who is roy", "who is pabitra roy", "who is mr. roy"]):
         return (
@@ -353,16 +378,25 @@ def index():
     if request.method == "POST":
         query = request.form.get("query", "").strip()
         if query:
-            custom = get_roy_custom_answer(query)
-            if custom:
-                offers = custom
+            lower_query = query.lower()
+
+            # Check if it's a card/movie/offer query
+            if any(word in lower_query for word in ["movie", "offer", "cashback", "card", "discount", "voucher"]):
+                offers = get_offers_from_mistral(query)
+                source = "offers"
+
+            # Check if it's a Roy-specific professional/holiday/team question
+            elif get_roy_custom_answer(query):
+                offers = get_roy_custom_answer(query)
                 source = "roy"
+
+            # General catch-all web search
             else:
                 offers = get_general_answer(query)
                 source = "web"
+
             show_suggestions = True
-        else:
-            show_status_message = True
+
     else:
         # Greet the user based on the time of day
         now = datetime.now()
